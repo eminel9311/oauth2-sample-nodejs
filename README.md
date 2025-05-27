@@ -1,0 +1,79 @@
+# 🔐 OAuth2 Demo với Super-Cute-App
+
+Đây là hệ thống demo OAuth2 sử dụng Authorization Code Flow với 2 phần:
+
+- `super-cute-app`: OAuth2 Server viết bằng Node.js + Express + oauth2orize
+- `client-app`: Ứng dụng frontend React (Vite) với nút "Đăng nhập bằng super-cute-app"
+
+---
+
+## 🧠 Luồng hoạt động (Authorization Code Flow)
+
+1. **Client app** hiển thị nút: `Đăng nhập bằng super-cute-app`.
+2. Người dùng click → redirect tới `http://localhost:3000/oauth2/authorize?...`
+3. Server hiển thị giao diện xác nhận quyền truy cập.
+4. Người dùng cho phép → server redirect về `http://localhost:5173/callback?code=...`
+5. Client dùng `code` để đổi lấy `access_token` qua `/oauth2/token`.
+6. Dùng `access_token` để gọi các API bảo vệ.
+
+## ## 🧩 Cấu trúc thư mục
+
+```
+project-root/
+├── super-cute-app/ # OAuth2 Server
+│ ├── models/
+│ ├── config/oauth2.js
+│ ├── routes/index.js
+│ ├── .env
+│ └── server.js
+└── client-app/ # React Client (Vite)
+├── src/
+│ ├── App.jsx
+│ └── main.jsx
+├── vite.config.js
+└── index.html
+```
+
+## 🚀 Hướng dẫn cài đặt và chạy
+
+### 1. Cài đặt và chạy OAuth2 Server
+
+```bash
+# Di chuyển vào thư mục server
+cd oauth-server-nodejs
+
+# Cài đặt dependencies
+npm install
+
+# Chạy server ở chế độ development
+npm run dev
+```
+
+Server sẽ chạy tại `http://localhost:3000`
+
+### 2. Cài đặt và chạy Client App
+
+```bash
+# Di chuyển vào thư mục client
+cd oauth2-client
+
+# Cài đặt dependencies
+npm install
+
+# Chạy client app
+npm run dev
+```
+
+Client app sẽ chạy tại `http://localhost:5173`
+
+### 3. Kiểm tra
+
+Truy cập: http://localhost:5173
+
+Bấm nút 🔐 Đăng nhập bằng super-cute-app
+
+Bạn sẽ được redirect đến trang xác nhận
+
+Bấm "Allow Access" → quay lại client
+
+Xem access token trong console hoặc UI
