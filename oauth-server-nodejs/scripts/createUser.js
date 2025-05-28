@@ -19,7 +19,7 @@ mongoose
 const createUser = async () => {
   try {
     const user = new User({
-      username: "quanbh",
+      username: "eminel",
       password: "conga@1102",
     });
     await user.save();
