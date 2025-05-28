@@ -89,3 +89,10 @@ Client app sẽ chạy tại `http://localhost:5173`
 5. Bấm "Allow Access" → quay lại client
 
 6. Xem thông tin được trả về từ hệ thống Oauth2
+
+### 4. Demo
+
+https://i.uimgfree.com/file/W2QOH2M05B.png
+https://i.uimgfree.com/file/T6NOJTVED8.png
+https://i.uimgfree.com/file/41288YD11A.png
+https://i.uimgfree.com/file/0HILDGXQHH.png
