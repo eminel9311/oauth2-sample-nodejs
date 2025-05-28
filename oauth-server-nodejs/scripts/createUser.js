@@ -20,7 +20,7 @@ const createUser = async () => {
   try {
     const user = new User({
       username: "eminel",
-      password: "conga@1102",
+      password: "xxxxxx",
     });
     await user.save();
     console.log("User created");
