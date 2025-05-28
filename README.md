@@ -36,6 +36,16 @@ project-root/
 
 ## 🚀 Hướng dẫn cài đặt và chạy
 
+### 🐳 Chuẩn bị MongoDB bằng Docker
+
+1. Tạo file `.env` trong thư mục `oauth-server-nodejs` (xem ví dụ ở trên).
+2. Chạy lệnh sau để khởi động MongoDB:
+   ```bash
+   cd oauth-server-nodejs
+   docker-compose up -d
+   ```
+3. Sau khi MongoDB đã chạy, tiếp tục các bước cài đặt và chạy server như hướng dẫn phía trên.
+
 ### 1. Cài đặt và chạy OAuth2 Server
 
 ```bash
@@ -68,12 +78,14 @@ Client app sẽ chạy tại `http://localhost:5173`
 
 ### 3. Kiểm tra
 
-Truy cập: http://localhost:5173
+1. Truy cập: http://localhost:5173
 
-Bấm nút 🔐 Đăng nhập bằng super-cute-app
+2. Bấm nút 🔐 Đăng nhập bằng super-cute-app
 
-Bạn sẽ được redirect đến trang xác nhận
+3. Bạn sẽ được redirect đến trang để login vào hệ thống Oauth2
 
-Bấm "Allow Access" → quay lại client
+4. Nhập thông tin username/password
 
-Xem access token trong console hoặc UI
+5. Bấm "Allow Access" → quay lại client
+
+6. Xem thông tin được trả về từ hệ thống Oauth2
