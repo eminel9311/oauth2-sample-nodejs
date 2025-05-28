@@ -33,33 +33,33 @@ server.deserializeClient(async (id, done) => {
   }
 });
 
-// Authorization Code Grant
-server.grant(
-  oauth2orize.grant.code(async (client, redirectUri, user, req, done) => {
-    try {
-      // Tạo authorization code đơn giản
-      const code = crypto.randomBytes(32).toString("hex");
+// Authorization Code Grant - default
+// server.grant(
+//   oauth2orize.grant.code(async (client, redirectUri, user, req, done) => {
+//     try {
+//       // Tạo authorization code đơn giản
+//       const code = crypto.randomBytes(32).toString("hex");
 
-      // Lưu code với thông tin liên quan
-      authorizationCodes.set(code, {
-        clientId: client.id,
-        userId: user.id,
-        redirectUri: redirectUri,
-        createdAt: Date.now(),
-        expiresIn: 10 * 60 * 1000, // 10 minutes
-      });
+//       // Lưu code với thông tin liên quan
+//       authorizationCodes.set(code, {
+//         clientId: client.id,
+//         userId: user.id,
+//         redirectUri: redirectUri,
+//         createdAt: Date.now(),
+//         expiresIn: 10 * 60 * 1000, // 10 minutes
+//       });
 
-      // Cleanup expired codes
-      setTimeout(() => {
-        authorizationCodes.delete(code);
-      }, 10 * 60 * 1000);
+//       // Cleanup expired codes
+//       setTimeout(() => {
+//         authorizationCodes.delete(code);
+//       }, 10 * 60 * 1000);
 
-      done(null, code);
-    } catch (err) {
-      done(err);
-    }
-  })
-);
+//       done(null, code);
+//     } catch (err) {
+//       done(err);
+//     }
+//   })
+// );
 
 // Token Exchange
 server.exchange(
