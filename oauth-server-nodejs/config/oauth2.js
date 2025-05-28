@@ -67,6 +67,7 @@ server.exchange(
     try {
       // 1. Kiểm tra authorization code
       const authData = authorizationCodes.get(code);
+      console.log("authorizationCodes", authorizationCodes);
       if (!authData) {
         return done(new Error("Invalid or expired authorization code"));
       }
@@ -112,6 +113,8 @@ server.exchange(
         JWT_SECRET,
         { expiresIn: "7d" }
       );
+
+      console.log("aaaa", accessToken);
 
       // 8. Trả về tokens
       done(null, accessToken, refreshToken, {
@@ -316,22 +319,22 @@ exports.token = [
 ];
 
 // Utility functions
-exports.validateClient = async (clientId, clientSecret) => {
-  try {
-    const client = await Client.findOne({ id: clientId });
-    if (!client) {
-      return false;
-    }
+// exports.validateClient = async (clientId, clientSecret) => {
+//   try {
+//     const client = await Client.findOne({ id: clientId });
+//     if (!client) {
+//       return false;
+//     }
 
-    // Use timing-safe comparison
-    return crypto.timingSafeEqual(
-      Buffer.from(client.secret),
-      Buffer.from(clientSecret)
-    );
-  } catch (err) {
-    return false;
-  }
-};
+//     // Use timing-safe comparison
+//     return crypto.timingSafeEqual(
+//       Buffer.from(client.secret),
+//       Buffer.from(clientSecret)
+//     );
+//   } catch (err) {
+//     return false;
+//   }
+// };
 
 // Export server for additional configuration if needed
 // exports.server = server;
