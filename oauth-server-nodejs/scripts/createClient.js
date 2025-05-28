@@ -20,7 +20,7 @@ const createClient = async () => {
   const client = new Client({
     id: "client1",
     secret: "secret1",
-    redirectUris: ["http://localhost:3000/oauth2/callback"], // TODO: change to the actual redirect URI
+    redirectUris: ["http://localhost:5173/callback"], // TODO: change to the actual redirect URI
   });
   await client.save();
   console.log("Client created:", client);

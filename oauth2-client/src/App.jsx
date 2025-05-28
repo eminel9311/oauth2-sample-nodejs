@@ -8,7 +8,7 @@ function App() {
       state: "random123"
     });
 
-    window.location.href = `http://localhost:3000/oauth2/authorize?${params.toString()}`;
+    window.location.href = `http://localhost:3000/oauth2/identifier?${params.toString()}`;
   };
 
   return (

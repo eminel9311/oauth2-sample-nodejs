@@ -127,7 +127,7 @@ server.exchange(
 const customAuthorization = async (req, res, next) => {
   try {
     const { client_id, redirect_uri, response_type, scope, state } = req.query;
-
+    console.log("req.query", req.query);
     // Validate required parameters
     if (!client_id || !redirect_uri || !response_type) {
       return res.status(400).json({
@@ -152,6 +152,8 @@ const customAuthorization = async (req, res, next) => {
       });
     }
 
+    console.log("client", client);
+    console.log("redirect_uri", redirect_uri);
     // Validate redirect URI
     if (!client.redirectUris || !client.redirectUris.includes(redirect_uri)) {
       return res.status(400).json({
@@ -160,12 +162,20 @@ const customAuthorization = async (req, res, next) => {
       });
     }
 
+    // Check if user is authenticated
+    if (!req.session.user) {
+      // Redirect to login form with all parameters
+      const loginUrl = `/oauth2/identifier?client_id=${client_id}&response_type=${response_type}&redirect_uri=${redirect_uri}&scope=${scope}&state=${state}`;
+      return res.redirect(loginUrl);
+    }
+
     // Store client and redirect info in request
     req.oauth2 = {
       client: client,
       redirectUri: redirect_uri,
       scope: scope,
       state: state,
+      user: req.session.user, // Add user to oauth2 context
     };
 
     next();
@@ -182,7 +192,7 @@ const customAuthorization = async (req, res, next) => {
 const customDecision = async (req, res) => {
   try {
     const { authorize } = req.body;
-    const { client, redirectUri, scope, state } = req.oauth2;
+    const { client, redirectUri, scope, state, user } = req.oauth2;
 
     if (authorize === "deny") {
       // User denied authorization
@@ -201,13 +211,13 @@ const customDecision = async (req, res) => {
       // User approved authorization - generate code
       const code = crypto.randomBytes(32).toString("hex");
 
-      // Assume user is authenticated (you'll need to implement user auth)
-      const user = req.user || { id: "test-user-id" }; // Mock user for testing
+      // Use the authenticated user
+      const userId = user._id;
 
       // Store authorization code
       authorizationCodes.set(code, {
         clientId: client.id,
-        userId: user.id,
+        userId: userId,
         redirectUri: redirectUri,
         createdAt: Date.now(),
         expiresIn: 10 * 60 * 1000,
