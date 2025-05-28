@@ -65,44 +65,44 @@ server.grant(
 server.exchange(
   oauth2orize.exchange.code(async (client, code, redirectUri, done) => {
     try {
-      // Kiểm tra authorization code
+      // 1. Kiểm tra authorization code
       const authData = authorizationCodes.get(code);
       if (!authData) {
         return done(new Error("Invalid or expired authorization code"));
       }
 
-      // Kiểm tra expiration
+      // 2. Kiểm tra expiration
       if (Date.now() - authData.createdAt > authData.expiresIn) {
         authorizationCodes.delete(code);
         return done(new Error("Authorization code expired"));
       }
 
-      // Kiểm tra client có quyền sử dụng code này
+      // 3. Kiểm tra client có quyền sử dụng code này
       if (authData.clientId !== client.id) {
         return done(new Error("Invalid client for this authorization code"));
       }
 
-      // Kiểm tra redirectUri khớp
+      // 4. Kiểm tra redirectUri khớp
       if (authData.redirectUri !== redirectUri) {
         return done(new Error("Redirect URI mismatch"));
       }
 
-      // Xóa code sau khi sử dụng (one-time use)
+      // 5. Xóa code sau khi sử dụng (one-time use)
       authorizationCodes.delete(code);
 
-      // Tạo access token
+      // 6. Tạo access token
       const accessToken = jwt.sign(
         {
           clientId: client.id,
           userId: authData.userId,
           type: "access_token",
-          scope: "read", // có thể customize
+          scope: "read",
         },
         JWT_SECRET,
         { expiresIn: "1h" }
       );
 
-      // Tạo refresh token
+      // 7. Tạo refresh token
       const refreshToken = jwt.sign(
         {
           clientId: client.id,
@@ -113,6 +113,7 @@ server.exchange(
         { expiresIn: "7d" }
       );
 
+      // 8. Trả về tokens
       done(null, accessToken, refreshToken, {
         expires_in: 3600,
         token_type: "Bearer",
@@ -127,7 +128,6 @@ server.exchange(
 const customAuthorization = async (req, res, next) => {
   try {
     const { client_id, redirect_uri, response_type, scope, state } = req.query;
-    console.log("req.query", req.query);
     // Validate required parameters
     if (!client_id || !redirect_uri || !response_type) {
       return res.status(400).json({
@@ -151,9 +151,6 @@ const customAuthorization = async (req, res, next) => {
         error_description: "Client not found",
       });
     }
-
-    console.log("client", client);
-    console.log("redirect_uri", redirect_uri);
     // Validate redirect URI
     if (!client.redirectUris || !client.redirectUris.includes(redirect_uri)) {
       return res.status(400).json({
@@ -180,7 +177,6 @@ const customAuthorization = async (req, res, next) => {
 
     next();
   } catch (err) {
-    console.error("Authorization error:", err);
     res.status(500).json({
       error: "server_error",
       error_description: "Internal server error",
@@ -242,7 +238,6 @@ const customDecision = async (req, res) => {
       error_description: "Invalid authorization decision",
     });
   } catch (err) {
-    console.error("Decision error:", err);
     res.status(500).json({
       error: "server_error",
       error_description: "Internal server error",
@@ -313,7 +308,7 @@ exports.authorization = [
 
 // Token endpoint - keep using oauth2orize for this
 exports.token = [
-  passport.authenticate(["basic", "oauth2-client-password"], {
+  passport.authenticate(["oauth2-client-basic"], {
     session: false,
   }),
   server.token(),
@@ -339,4 +334,4 @@ exports.validateClient = async (clientId, clientSecret) => {
 };
 
 // Export server for additional configuration if needed
-exports.server = server;
+// exports.server = server;

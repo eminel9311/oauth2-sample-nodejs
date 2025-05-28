@@ -3,6 +3,10 @@ const router = express.Router();
 const oauth2Controller = require("../config/oauth2");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+// Thêm middleware để parse body
+router.use(express.urlencoded({ extended: true }));
 
 // Login form route
 router.get("/identifier", (req, res) => {
@@ -78,10 +82,8 @@ router.post("/identifier", async (req, res) => {
 
     // Redirect to authorization form
     const authUrl = `/oauth2/authorize?client_id=${client_id}&response_type=${response_type}&redirect_uri=${redirect_uri}&scope=${scope}&state=${state}`;
-    console.log("authUrl", authUrl);
     res.redirect(authUrl);
   } catch (err) {
-    console.error("Login error:", err);
     res.redirect(
       `/oauth2/identifier?error=Server error&client_id=${req.body.client_id}&response_type=${req.body.response_type}&redirect_uri=${req.body.redirect_uri}&scope=${req.body.scope}&state=${req.body.state}`
     );
@@ -96,14 +98,54 @@ router.post("/authorize", oauth2Controller.authorization);
 router.post("/token", oauth2Controller.token);
 
 // Callback endpoint cho testing
-router.get("/callback", (req, res) => {
-  res.json({
-    message: "Authorization successful!",
-    code: req.query.code,
-    state: req.query.state,
-    error: req.query.error,
-    error_description: req.query.error_description,
-  });
-});
+// router.get("/callback", (req, res) => {
+//   res.json({
+//     message: "Authorization successful!",
+//     code: req.query.code,
+//     state: req.query.state,
+//     error: req.query.error,
+//     error_description: req.query.error_description,
+//   });
+// });
+
+// Thêm route mới để lấy thông tin user
+router.get(
+  "/userinfo",
+  // Middleware xác thực token
+  (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    try {
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET || "fallback-secret-key"
+      );
+      req.user = decoded;
+      next();
+    } catch (err) {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+  },
+  // Handler lấy thông tin user
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.user.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({
+        id: user._id,
+        username: user.username,
+      });
+    } catch (err) {
+      res.status(500).json({ error: "Server error" });
+    }
+  }
+);
 
 module.exports = router;

@@ -4,6 +4,7 @@ const User = require("../models/user");
 const Client = require("../models/client");
 const bcrypt = require("bcryptjs");
 
+// Strategy cho user authentication
 // passport.use(
 //   new BasicStrategy(async function (username, password, done) {
 //     try {
@@ -28,23 +29,23 @@ const bcrypt = require("bcryptjs");
 //   })
 // );
 
-// passport.use(
-//   "client-basic",
-//   new BasicStrategy(async function (clientId, clientSecret, done) {
-//     try {
-//       console.log(`Authenticating client: ${clientId}`);
-//       const client = await Client.findOne({ id: clientId });
-//       if (!client || client.secret !== clientSecret) {
-//         console.log("Client not found or secret does not match");
-//         return done(null, false);
-//       }
-//       return done(null, client);
-//     } catch (err) {
-//       console.log("Error:", err);
-
-//       return done(err);
-//     }
-//   })
-// );
+// Strategy cho client authentication
+passport.use(
+  "oauth2-client-basic",
+  new BasicStrategy(async function (clientId, clientSecret, done) {
+    try {
+      console.log(`Authenticating client: ${clientId}`);
+      const client = await Client.findOne({ id: clientId });
+      if (!client || client.secret !== clientSecret) {
+        console.log("Client not found or secret does not match");
+        return done(null, false);
+      }
+      return done(null, client);
+    } catch (err) {
+      console.log("Error:", err);
+      return done(err);
+    }
+  })
+);
 
 module.exports = passport;

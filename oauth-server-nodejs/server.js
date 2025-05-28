@@ -3,12 +3,21 @@ const express = require("express");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const session = require("express-session");
+const cors = require("cors");
 
 const app = express();
 
 // Body parsing - multiple approaches for compatibility
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+//CORS middleware
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Client app URL
+    credentials: true,
+  })
+);
 
 // Session
 app.use(
@@ -41,9 +50,6 @@ mongoose
     console.log("MongoDB connected...");
     app.listen(3000, () => {
       console.log("OAuth server is running on port 3000");
-      console.log(
-        "Test URL: http://localhost:3000/oauth2/authorize?client_id=client1&response_type=code&redirect_uri=http://localhost:3000/oauth2/callback&scope=read&state=random123"
-      );
     });
   })
   .catch((err) => {
