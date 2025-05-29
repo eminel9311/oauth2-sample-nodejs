@@ -11,10 +11,12 @@
 
 1. **Client app** hiển thị nút: `Đăng nhập bằng super-cute-app`.
 2. Người dùng click → redirect tới `http://localhost:3000/oauth2/authorize?...`
-3. Server hiển thị giao diện xác nhận quyền truy cập.
-4. Người dùng cho phép → server redirect về `http://localhost:5173/callback?code=...`
-5. Client dùng `code` để đổi lấy `access_token` qua `/oauth2/token`.
-6. Dùng `access_token` để gọi các API bảo vệ.
+3. Server hiển thị giao diện đăng nhập vào hệ thống oauth2, người dùng nhập thông tin username/password
+4. Server hiển thị giao diện xác nhận quyền truy cập. 
+5. Người dùng xác nhận quyền truy cập.(allow or deny)
+6. Người dùng cho phép → server redirect về `http://localhost:5173/callback?code=...`
+7. Client dùng `code` để đổi lấy `access_token` qua `/oauth2/token`.
+8. Dùng `access_token` để gọi các API bảo vệ.
 
 ## ## 🧩 Cấu trúc thư mục
 
